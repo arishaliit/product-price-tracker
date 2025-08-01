@@ -71,8 +71,9 @@ docker build -t aali25/product-price-tracker-backend:latest -f Dockerfile.backen
 ```
 
 ### 4. Deploy to Kubernetes
-```
+
 Apply the Kubernetes manifests:
+```
 kubectl apply -f k8s/frontend-deployment.yaml
 kubectl apply -f k8s/frontend-service.yaml
 kubectl apply -f k8s/backend-deployment.yaml
