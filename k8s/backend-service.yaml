@@ -1,0 +1,13 @@
+# k8s/backend-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service # This name will be used by the frontend to discover the backend
+spec:
+  selector:
+    app: backend # Selects pods with the label 'app: backend' (from backend-deployment.yaml)
+  ports:
+    - protocol: TCP
+      port: 5000 # The port that this Kubernetes Service exposes
+      targetPort: 5000 # The port on the container that the service targets (Flask app's port)
+  type: ClusterIP # This service is only accessible from within the Kubernetes cluster

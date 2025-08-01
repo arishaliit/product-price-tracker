@@ -1,0 +1,38 @@
+# k8s/frontend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend
+spec:
+  replicas: 1 # Start with 1 replica for the frontend service
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        # IMPORTANT: Replace with the actual image name you build.
+        # If using Minikube's Docker daemon: product-price-tracker-frontend:v1
+        # If pushing to Docker Hub: your-dockerhub-username/product-price-tracker-frontend:v1
+        image: product-price-tracker-frontend:v1
+        imagePullPolicy: IfNotPresent # Use IfNotPresent for local images
+        ports:
+        - containerPort: 80 # The port your Nginx server (serving React) listens on
+        env:
+        # This environment variable is crucial! It tells the React app
+        # how to reach the backend service within the Kubernetes cluster.
+        - name: REACT_APP_BACKEND_URL
+          value: "http://backend-service:5000" # 'backend-service' is the name of our Kubernetes Service
+        resources: # Optional, but good practice
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
+          requests:
+            memory: "128Mi"
+            cpu: "100m"

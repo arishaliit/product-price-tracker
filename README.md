@@ -1,70 +1,127 @@
-# Getting Started with Create React App
+Product Price Tracker
+This project is a full-stack web application designed to track the price of products from various e-commerce websites. The application consists of a React-based frontend, a Flask-based backend API, and a CI/CD pipeline for automated deployment to a Kubernetes cluster.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Features
+Frontend: A user-friendly interface built with React.js that allows users to input a product URL.
 
-## Available Scripts
+Backend: A RESTful API built with Flask and Python for web scraping and data processing.
 
-In the project directory, you can run:
+Containerization: The frontend and backend services are containerized using Docker.
 
-### `npm start`
+Orchestration: The services are deployed and managed on a local Kubernetes cluster using Minikube.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+CI/CD: A GitHub Actions workflow automates the build of Docker images and pushes them to Docker Hub.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Technologies Used
+Frontend
 
-### `npm test`
+React
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+HTML5, CSS3
 
-### `npm run build`
+Backend
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Python
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Flask
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Infrastructure & DevOps
 
-### `npm run eject`
+Kubernetes (Minikube)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Docker
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Nginx (as a reverse proxy)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+GitHub Actions
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+How to Run the Project Locally
+Follow these steps to set up and run the application on your local machine using Minikube.
 
-## Learn More
+Prerequisites
+You need to have the following software installed:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Docker: For containerization.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Minikube: To run a local Kubernetes cluster.
 
-### Code Splitting
+kubectl: To interact with the Kubernetes cluster.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Git: To clone the repository.
 
-### Analyzing the Bundle Size
+1. Clone the Repository
+Clone the project from GitHub to your local machine:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+git clone https://github.com/arishaliit/product-price-tracker.git
+cd product-price-tracker
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+2. Start Minikube
+Start your Minikube cluster with a Docker driver. This command may require administrator privileges.
 
-### Advanced Configuration
+minikube start --driver=docker
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
+3. Build and Push Docker Images
+You need to build the Docker images for both the frontend and backend and push them to Docker Hub. First, configure your Docker environment to use Minikube's Docker daemon.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+minikube -p minikube docker-env
+# Follow the instructions given by the command above to configure your shell
+# e.g., on Windows PowerShell:
+# & minikube -p minikube docker-env | Invoke-Expression
 
-### `npm run build` fails to minify
+# Build the images
+docker build -t aali25/product-price-tracker-frontend:latest -f Dockerfile.frontend .
+docker build -t aali25/product-price-tracker-backend:latest -f Dockerfile.backend .
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+4. Deploy to Kubernetes
+Apply the Kubernetes YAML files to deploy the services and deployments. These files will pull the images from your Docker Hub repository.
+
+kubectl apply -f k8s/frontend-deployment.yaml
+kubectl apply -f k8s/frontend-service.yaml
+kubectl apply -f k8s/backend-deployment.yaml
+kubectl apply -f k8s/backend-service.yaml
+
+
+5. Access the Application
+To access the frontend, you need to use minikube tunnel to expose the NodePort service.
+
+Open a new terminal window (keep the current one open).
+
+Run the tunnel command in the new terminal. This terminal must remain open.
+
+minikube tunnel
+
+
+
+In your original terminal, get the URL for your frontend service:
+
+minikube service frontend-service --url
+
+
+
+Copy the URL (e.g., http://127.0.0.1:53212) and open it in your web browser.
+
+Project Structure
+product-price-tracker/
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── ...
+├── backend/
+│   ├── app.py
+│   └── ...
+├── k8s/
+│   ├── frontend-deployment.yaml
+│   ├── frontend-service.yaml
+│   ├── backend-deployment.yaml
+│   └── backend-service.yaml
+├── .github/
+│   └── workflows/
+│       └── main.yml
+├── Dockerfile.frontend
+├── Dockerfile.backend
+├── nginx/
+│   └── nginx.conf
+└── README.md

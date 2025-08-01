@@ -1,0 +1,38 @@
+# k8s/backend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: backend
+spec:
+  replicas: 1 # Start with 1 replica for the backend service
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        # IMPORTANT: Replace with the actual image name you build.
+        # If using Minikube's Docker daemon: product-price-tracker-backend:v1
+        # If pushing to Docker Hub: your-dockerhub-username/product-price-tracker-backend:v1
+        image: product-price-tracker-backend:v1
+        # imagePullPolicy: IfNotPresent is good for local Minikube images.
+        # Use Always if you want to ensure the latest image from a registry.
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000 # The port your Flask app listens on
+        env:
+        - name: PORT # Match the environment variable expected by your Flask app (app.py)
+          value: "5000"
+        resources: # Optional, but good practice for resource management
+          limits:
+            memory: "256Mi" # Limit memory usage
+            cpu: "300m"    # Limit CPU usage (300 millicores)
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
